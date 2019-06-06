@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { exec } = require('child_process');
 const { Client } = require('pg');
+const cors = require('cors');
 
 function createMailUser(login, password) {
     const command = `./create_mail_user_SQL.sh ${login} ${password}`;
@@ -16,7 +17,6 @@ function createMailUser(login, password) {
         const stringLength = stdout.length;
 
         const commandMailbox = stdout.substring(0, indexOfNextStatement - 1);
-
         const commandForwardings = stdout.substring(indexOfNextStatement, stringLength);
 
         console.log(`stdout: ${stdout}`);
@@ -41,20 +41,22 @@ function createMailUser(login, password) {
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 
 app.listen(3001, () => {
     console.log('Node.js mailserver started at port 3001, __dirname: ', __dirname);
 });
 
 app.post('/api/mail/create-account', (req, res) => {
-    console.log('Request: ', req.body);
+    console.log('Create accout request: ', req.body);
     
     const { login, password } = req.body;
 
     createMailUser(login, password);
 
-    const dateTime = new Date();
-    const responseBody = 'POST request to the homepage on: ' + dateTime;
+    const responseBody = { 
+        message: "POST request to the homepage on: " + new Date()
+    };
     
     res.status(200).send(responseBody);
 });

@@ -1,5 +1,6 @@
 Client
 =======
+Build docker: docker build -t matveyneyman/node-server .  
 Push to docker hub: docker push matveyneyman/node-server  
 
 Server
